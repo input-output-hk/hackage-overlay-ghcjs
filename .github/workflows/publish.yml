@@ -15,7 +15,7 @@ jobs:
       - name: Build 🔧
         uses: workflow/nix-shell-action@v3
         with:
-          packages: cabal-install, ghc, gnupg, unzip
+          packages: cabal-install, ghc, gnupg, unzip, dos2unix
           script: |
             mkdir $HOME/secrets
             gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.KEYS_KEY }}" \
