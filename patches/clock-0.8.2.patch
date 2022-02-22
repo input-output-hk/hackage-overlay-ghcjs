@@ -2,7 +2,7 @@ diff --git b/clock.cabal a/clock.cabal
 index 253033538..8a73b9640 100644
 --- b/clock.cabal
 +++ a/clock.cabal
-@@ -84,6 +84,8 @@ library
+@@ -86,6 +86,8 @@
      if flag(llvm)
        ghc-options:       -fllvm -optlo-O3
 
