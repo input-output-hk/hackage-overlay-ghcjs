@@ -1,0 +1,51 @@
+From ddda007c44390d0ec8cad58810710864dee60ddd Mon Sep 17 00:00:00 2001
+From: Ali Abrar <ali.abrar@obsidian.systems>
+Date: Thu, 30 Dec 2021 14:29:18 -0500
+Subject: [PATCH] ghcjs: Use globalThis instead of window
+
+This allows the global crypto object to be accessed in non-window
+contexts (e.g., service workers). For more info, see:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
+---
+ System/EntropyGhcjs.hs | 6 +++---
+ entropy.cabal          | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/System/EntropyGhcjs.hs b/System/EntropyGhcjs.hs
+index 17a144c..9590b67 100644
+--- a/System/EntropyGhcjs.hs
++++ b/System/EntropyGhcjs.hs
+@@ -19,7 +19,7 @@ import Data.ByteString as B
+ import GHCJS.DOM.Crypto as Crypto
+ import GHCJS.DOM.Types (ArrayBufferView (..), fromJSValUnchecked)
+ import GHCJS.DOM.GlobalCrypto (getCrypto)
+-import GHCJS.DOM (currentWindowUnchecked)
++import GHCJS.DOM (globalThisUnchecked)
+ import Language.Javascript.JSaddle.Object as JS
+ 
+ 
+@@ -36,8 +36,8 @@ hardwareRandom _ = pure Nothing
+ -- |Open a `CryptHandle`
+ openHandle :: IO CryptHandle
+ openHandle = do
+-  w <- currentWindowUnchecked
+-  CH <$> getCrypto w
++  this <- globalThisUnchecked
++  CH <$> getCrypto this
+ 
+ -- |Close the `CryptHandle`
+ closeHandle :: CryptHandle -> IO ()
+diff --git a/entropy.cabal b/entropy.cabal
+index b3570cb..4bbc8c1 100644
+--- a/entropy.cabal
++++ b/entropy.cabal
+@@ -50,7 +50,7 @@ library
+   default-language:    Haskell2010
+ 
+   if impl(ghcjs) || os(ghcjs) {
+-    build-depends:     ghcjs-dom
++    build-depends:     ghcjs-dom >= 0.9.5.0 && < 1
+                      , jsaddle
+   }
+   else {
+
