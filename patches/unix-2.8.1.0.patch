@@ -30,9 +30,9 @@ diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Process/Inter
  {-# LANGUAGE Trustworthy #-}
 +{-# LANGUAGE CPP #-}
  
- module System.Posix.Process.Internals (
-        pPrPr_disableITimers, c_execvpe,
-@@ -9,7 +10,12 @@
+ #include "HsUnix.h"
+ 
+@@ -11,7 +12,12 @@
  import Foreign.C
  import System.Exit
  import System.IO.Error
@@ -43,25 +43,27 @@ diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Process/Inter
  import GHC.Conc (Signal)
 +#endif
  
- -- | The exit status of a process
- data ProcessStatus
+ #if !defined(HAVE_GETPID)
+ import System.IO.Error ( ioeSetLocation )
 diff -X ../utils/updatePatches.excludes -Nru upstream/config.sub boot/config.sub
 --- upstream/config.sub	2001-09-09 03:46:40.000000000 +0200
 +++ boot/config.sub	2021-06-11 14:49:50.712651100 +0200
-@@ -1169,6 +1169,7 @@
- 			| arm | arm[lb]e | arme[lb] | armv* \
- 			| avr | avr32 \
- 			| asmjs \
-+			| js \
- 			| ba \
- 			| be32 | be64 \
- 			| bfin | bpf | bs2000 \
-@@ -1728,7 +1729,7 @@
- 	     | powermax* | dnix* | nx6 | nx7 | sei* | dragonfly* \
- 	     | skyos* | haiku* | rdos* | toppers* | drops* | es* \
- 	     | onefs* | tirtos* | phoenix* | fuchsia* | redox* | bme* \
--	     | midnightbsd* | amdhsa* | unleashed* | emscripten* | wasi* \
-+	     | midnightbsd* | amdhsa* | unleashed* | emscripten* | wasi* | ghcjs* \
- 	     | nsk* | powerunix* | genode* | zvmoe* | qnx* | emx*)
+@@ -527,6 +527,9 @@
+ 	asmjs)
+ 		basic_machine=asmjs-unknown
  		;;
- 	# This one is extra strict with allowed versions
++	javascript)
++		basic_machine=javascript-unknown
++		;;
+ 	aux)
+ 		basic_machine=m68k-apple
+ 		os=-aux
+@@ -1417,7 +1420,7 @@
+ 	      | -morphos* | -superux* | -rtmk* | -rtmk-nova* | -windiss* \
+ 	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
+ 	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es* \
+-	      | -onefs* | -tirtos* | -phoenix* | -fuchsia* | -redox*)
++	      | -onefs* | -tirtos* | -phoenix* | -fuchsia* | -redox* | -ghcjs* )
+ 	# Remember, each alternative MUST END IN *, to match a version number.
+ 		;;
+ 	-qnx*)
