@@ -22,9 +22,9 @@ diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/IO/Common.hsc
  
  -- -----------------------------------------------------------------------------
  -- Locking
-diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Process/Internals.hs boot/System/Posix/Process/Internals.hs
---- upstream/System/Posix/Process/Internals.hs	2001-09-09 03:46:40.000000000 +0200
-+++ boot/System/Posix/Process/Internals.hs	2021-06-10 22:32:23.930000000 +0200
+diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Process/Internals.hsc boot/System/Posix/Process/Internals.hsc
+--- upstream/System/Posix/Process/Internals.hsc	2001-09-09 03:46:40.000000000 +0200
++++ boot/System/Posix/Process/Internals.hsc	2021-06-10 22:32:23.930000000 +0200
 @@ -1,5 +1,6 @@
  {-# LANGUAGE CApiFFI #-}
  {-# LANGUAGE Trustworthy #-}
@@ -45,32 +45,6 @@ diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Process/Inter
  
  -- | The exit status of a process
  data ProcessStatus
-diff -X ../utils/updatePatches.excludes -Nru upstream/System/Posix/Signals.hsc boot/System/Posix/Signals.hsc
---- upstream/System/Posix/Signals.hsc	2001-09-09 03:46:40.000000000 +0200
-+++ boot/System/Posix/Signals.hsc	2021-06-10 22:32:23.930000000 +0200
-@@ -349,11 +349,10 @@
-                -> Maybe SignalSet       -- ^ other signals to block
-                -> IO Handler            -- ^ old handler
- 
--#ifdef __PARALLEL_HASKELL__
-+##if defined(__PARALLEL_HASKELL__)
- installHandler =
-   error "installHandler: not available for Parallel Haskell"
--#else
--
-+##else
- installHandler sig handler _maybe_mask = do
-   ensureIOManagerIsRunning  -- for the threaded RTS
- 
-@@ -441,7 +440,7 @@
-         siginfoError  = Errno errno,
-         siginfoSpecific = extra }
- 
--#endif /* !__PARALLEL_HASKELL__ */
-+##endif /* !__PARALLEL_HASKELL__ */
- 
- -- -----------------------------------------------------------------------------
- -- Alarms
 diff -X ../utils/updatePatches.excludes -Nru upstream/config.sub boot/config.sub
 --- upstream/config.sub	2001-09-09 03:46:40.000000000 +0200
 +++ boot/config.sub	2021-06-11 14:49:50.712651100 +0200
