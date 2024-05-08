@@ -1,7 +1,7 @@
-diff --git b/basement.cabal a/basement.cabal
-index 72125e015..b7670c3ee 100644
---- b/basement.cabal
-+++ a/basement.cabal
+diff --git a/basement.cabal b/basement.cabal
+index f85f617..d8d9102 100644
+--- a/basement.cabal
++++ b/basement.cabal
 @@ -157,3 +157,5 @@ library
      cpp-options: -DARCH_IS_UNKNOWN_ENDIAN
    include-dirs:      cbits

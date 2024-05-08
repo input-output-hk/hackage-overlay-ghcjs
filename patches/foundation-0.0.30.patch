@@ -1,11 +1,11 @@
-diff --git b/foundation.cabal a/foundation.cabal
-index 224c61308..ef25e37f8 100644
---- b/foundation.cabal
-+++ a/foundation.cabal
+diff --git a/foundation.cabal b/foundation.cabal
+index d33d874..3bf06bb 100644
+--- a/foundation.cabal
++++ b/foundation.cabal
 @@ -1,3 +1,4 @@
 +cabal-version:       2.0
  name:                foundation
- version:             0.0.26.1
+ version:             0.0.30
  synopsis:            Alternative prelude with batteries and no dependencies
 @@ -28,7 +29,6 @@ category:            foundation
  build-type:          Simple
@@ -13,12 +13,12 @@ index 224c61308..ef25e37f8 100644
  bug-reports:         https://github.com/haskell-foundation/foundation/issues
 -cabal-version:       1.18
  extra-source-files:  cbits/*.h
-
+ 
  source-repository head
 @@ -190,13 +190,17 @@ library
    if os(osx)
      exposed-modules: Foundation.System.Bindings.Macos
-
+ 
 +  if os(ghcjs)
 +    js-sources: jsbits/bindings.js
 +    extra-bundled-libraries: EMCCfoundation EMCCfoundation.exported
@@ -28,17 +28,17 @@ index 224c61308..ef25e37f8 100644
                        TypeFamilies
                        BangPatterns
                        DeriveDataTypeable
-
--  if impl(ghc < 8.0) || impl(ghcjs)
-+  if impl(ghc < 8.0)
+ 
+-  if impl(ghc < 8.10) || impl(ghcjs)
++  if impl(ghc < 8.10)
      buildable: False
    else
      build-depends:   base
-diff --git b/jsbits/bindings.js a/jsbits/bindings.js
+diff --git a/bindings.js b/bindings.js
 new file mode 100644
-index 000000000..fc51a85fe
+index 0000000..fc51a85
 --- /dev/null
-+++ a/jsbits/bindings.js
++++ b/bindings.js
 @@ -0,0 +1,61 @@
 +
 +// EMCC:EXPORTED_FUNCTIONS _malloc _free
