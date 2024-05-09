@@ -34,11 +34,11 @@ index d33d874..3bf06bb 100644
      buildable: False
    else
      build-depends:   base
-diff --git a/bindings.js b/bindings.js
+diff --git a/jsbits/bindings.js b/jsbits/bindings.js
 new file mode 100644
 index 0000000..fc51a85
 --- /dev/null
-+++ b/bindings.js
++++ b/jsbits/bindings.js
 @@ -0,0 +1,61 @@
 +
 +// EMCC:EXPORTED_FUNCTIONS _malloc _free
