@@ -102,3 +102,19 @@ index 0000000..fc51a85
 +    });
 +}
 \ No newline at end of file
+diff --git a/cbits/foundation_prim.h b/cbits/foundation_prim.h
+index 81eb475..4873216 100644
+--- a/cbits/foundation_prim.h
++++ b/cbits/foundation_prim.h
+@@ -1,6 +1,11 @@
+ #ifndef FOUNDATION_PRIM_H
+ #define FOUNDATION_PRIM_H
++
++#ifdef EMSCRIPTEN
++typedef int StgInt;
++#else
+ #include "Rts.h"
++#endif
+
+ typedef StgInt FsOffset;
+ typedef StgInt FsCountOf;

@@ -1,19 +1,208 @@
+diff --git a/Basement/Bits.hs b/Basement/Bits.hs
+index 7eeea0f..4df0d94 100644
+--- a/Basement/Bits.hs
++++ b/Basement/Bits.hs
+@@ -54,7 +54,11 @@ import GHC.Int
+ import Basement.Compat.Primitive
+ 
+ #if WORD_SIZE_IN_BITS < 64
+-import GHC.IntWord64
++#if MIN_VERSION_base(0,8,0)
++import           GHC.Exts
++#else
++import           GHC.IntWord64
++#endif
+ #endif
+ 
+ -- | operation over finite bits
+diff --git a/Basement/From.hs b/Basement/From.hs
+index 7bbe141..80014b3 100644
+--- a/Basement/From.hs
++++ b/Basement/From.hs
+@@ -272,23 +272,11 @@ instance (NatWithinBound (CountOf ty) n, KnownNat n, PrimType ty)
+     tryFrom = BlockN.toBlockN . UArray.toBlock . BoxArray.mapToUnboxed id
+ 
+ instance (KnownNat n, NatWithinBound Word8 n) => From (Zn64 n) Word8 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . unZn64 where narrow (W64# w) = W8# (wordToWord8# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . unZn64 where narrow (W64# w) = W8# (wordToWord8# (word64ToWord# w))
+-#endif
+ instance (KnownNat n, NatWithinBound Word16 n) => From (Zn64 n) Word16 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . unZn64 where narrow (W64# w) = W16# (wordToWord16# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . unZn64 where narrow (W64# w) = W16# (wordToWord16# (word64ToWord# w))
+-#endif
+ instance (KnownNat n, NatWithinBound Word32 n) => From (Zn64 n) Word32 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . unZn64 where narrow (W64# w) = W32# (wordToWord32# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . unZn64 where narrow (W64# w) = W32# (wordToWord32# (word64ToWord# w))
+-#endif
+ instance From (Zn64 n) Word64 where
+     from = unZn64
+ instance From (Zn64 n) Word128 where
+@@ -297,23 +285,11 @@ instance From (Zn64 n) Word256 where
+     from = from . unZn64
+ 
+ instance (KnownNat n, NatWithinBound Word8 n) => From (Zn n) Word8 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W8# (wordToWord8# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W8# (wordToWord8# (word64ToWord# w))
+-#endif
+ instance (KnownNat n, NatWithinBound Word16 n) => From (Zn n) Word16 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W16# (wordToWord16# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W16# (wordToWord16# (word64ToWord# w))
+-#endif
+ instance (KnownNat n, NatWithinBound Word32 n) => From (Zn n) Word32 where
+-#if __GLASGOW_HASKELL__ >= 904
+-    from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W32# (wordToWord32# (word64ToWord# (GHC.Prim.word64ToWord# w)))
+-#else
+     from = narrow . naturalToWord64 . unZn where narrow (W64# w) = W32# (wordToWord32# (word64ToWord# w))
+-#endif
+ instance (KnownNat n, NatWithinBound Word64 n) => From (Zn n) Word64 where
+     from = naturalToWord64 . unZn
+ instance (KnownNat n, NatWithinBound Word128 n) => From (Zn n) Word128 where
+diff --git a/Basement/Numerical/Additive.hs b/Basement/Numerical/Additive.hs
+index d0dfb97..b1b61cb 100644
+--- a/Basement/Numerical/Additive.hs
++++ b/Basement/Numerical/Additive.hs
+@@ -30,8 +30,12 @@ import qualified Basement.Types.Word128 as Word128
+ import qualified Basement.Types.Word256 as Word256
+ 
+ #if WORD_SIZE_IN_BITS < 64
++#if MIN_VERSION_ghc_prim(0,8,0)
++import           GHC.Exts
++#else
+ import           GHC.IntWord64
+ #endif
++#endif
+ 
+ -- | Represent class of things that can be added together,
+ -- contains a neutral element and is commutative.
+diff --git a/Basement/Numerical/Conversion.hs b/Basement/Numerical/Conversion.hs
+index db502c0..960aa0b 100644
+--- a/Basement/Numerical/Conversion.hs
++++ b/Basement/Numerical/Conversion.hs
+@@ -26,7 +26,11 @@ import GHC.Word
+ import Basement.Compat.Primitive
+ 
+ #if WORD_SIZE_IN_BITS < 64
+-import GHC.IntWord64
++#if MIN_VERSION_ghc_prim(0,8,0)
++import           GHC.Exts
++#else
++import           GHC.IntWord64
++#endif
+ #endif
+ 
+ intToInt64 :: Int -> Int64
+@@ -114,7 +118,7 @@ word64ToWord32s (W64# w64) = Word32x2 (W32# (wordToWord32# (uncheckedShiftRL# w6
+ #endif
+ #else
+ word64ToWord32s :: Word64 -> Word32x2
+-word64ToWord32s (W64# w64) = Word32x2 (W32# (word64ToWord# (uncheckedShiftRL64# w64 32#))) (W32# (word64ToWord# w64))
++word64ToWord32s (W64# w64) = Word32x2 (W32# (wordToWord32# (word64ToWord# (uncheckedShiftRL64# w64 32#)))) (W32# (wordToWord32# (word64ToWord# w64)))
+ #endif
+ 
+ wordToChar :: Word -> Char
+diff --git a/Basement/PrimType.hs b/Basement/PrimType.hs
+index f8ca292..02f134e 100644
+--- a/Basement/PrimType.hs
++++ b/Basement/PrimType.hs
+@@ -54,8 +54,12 @@ import           Basement.Nat
+ import qualified Prelude (quot)
+ 
+ #if WORD_SIZE_IN_BITS < 64
++#if MIN_VERSION_ghc_prim(0,8,0)
++import           GHC.Exts
++#else
+ import           GHC.IntWord64
+ #endif
++#endif
+ 
+ #ifdef FOUNDATION_BOUNDS_CHECK
+ 
+diff --git a/Basement/Types/OffsetSize.hs b/Basement/Types/OffsetSize.hs
+index cd94492..c7bc480 100644
+--- a/Basement/Types/OffsetSize.hs
++++ b/Basement/Types/OffsetSize.hs
+@@ -70,8 +70,12 @@ import Data.List (foldl')
+ import qualified Prelude
+ 
+ #if WORD_SIZE_IN_BITS < 64
++#if MIN_VERSION_ghc_prim(0,8,0)
++import GHC.Exts
++#else
+ import GHC.IntWord64
+ #endif
++#endif
+ 
+ -- | File size in bytes
+ newtype FileSize = FileSize Word64
+@@ -225,7 +229,7 @@ countOfRoundUp alignment (CountOf n) = CountOf ((n + (alignment-1)) .&. compleme
+ 
+ csizeOfSize :: CountOf Word8 -> CSize
+ #if WORD_SIZE_IN_BITS < 64
+-csizeOfSize (CountOf (I# sz)) = CSize (W32# (int2Word# sz))
++csizeOfSize (CountOf (I# sz)) = CSize (W32# (wordToWord32# (int2Word# sz)))
+ #else
+ #if __GLASGOW_HASKELL__ >= 904
+ csizeOfSize (CountOf (I# sz)) = CSize (W64# (wordToWord64# (int2Word# sz)))
+@@ -238,7 +242,7 @@ csizeOfSize (CountOf (I# sz)) = CSize (W64# (int2Word# sz))
+ 
+ csizeOfOffset :: Offset8 -> CSize
+ #if WORD_SIZE_IN_BITS < 64
+-csizeOfOffset (Offset (I# sz)) = CSize (W32# (int2Word# sz))
++csizeOfOffset (Offset (I# sz)) = CSize (W32# (wordToWord32# (int2Word# sz)))
+ #else
+ #if __GLASGOW_HASKELL__ >= 904
+ csizeOfOffset (Offset (I# sz)) = CSize (W64# (wordToWord64# (int2Word# sz)))
+@@ -250,7 +254,7 @@ csizeOfOffset (Offset (I# sz)) = CSize (W64# (int2Word# sz))
+ sizeOfCSSize :: CSsize -> CountOf Word8
+ sizeOfCSSize (CSsize (-1))      = error "invalid size: CSSize is -1"
+ #if WORD_SIZE_IN_BITS < 64
+-sizeOfCSSize (CSsize (I32# sz)) = CountOf (I# sz)
++sizeOfCSSize (CSsize (I32# sz)) = CountOf (I# (int32ToInt# sz))
+ #else
+ #if __GLASGOW_HASKELL__ >= 904
+ sizeOfCSSize (CSsize (I64# sz)) = CountOf (I# (int64ToInt# sz))
+@@ -261,7 +265,7 @@ sizeOfCSSize (CSsize (I64# sz)) = CountOf (I# sz)
+ 
+ sizeOfCSize :: CSize -> CountOf Word8
+ #if WORD_SIZE_IN_BITS < 64
+-sizeOfCSize (CSize (W32# sz)) = CountOf (I# (word2Int# sz))
++sizeOfCSize (CSize (W32# sz)) = CountOf (I# (word2Int# (word32ToWord# sz)))
+ #else
+ #if __GLASGOW_HASKELL__ >= 904
+ sizeOfCSize (CSize (W64# sz)) = CountOf (I# (word2Int# (word64ToWord# sz)))
 diff --git a/basement.cabal b/basement.cabal
-index f85f617..d8d9102 100644
+index f85f617..b01232c 100644
 --- a/basement.cabal
 +++ b/basement.cabal
-@@ -157,3 +157,5 @@ library
+@@ -156,4 +156,7 @@ library
+   else
      cpp-options: -DARCH_IS_UNKNOWN_ENDIAN
    include-dirs:      cbits
-   c-sources:         cbits/foundation_mem.c
-+  if os(ghcjs)
-+    js-sources: jsbits/basement.js
-diff --git b/jsbits/basement.js a/jsbits/basement.js
+-  c-sources:         cbits/foundation_mem.c
++  if !os(ghcjs)
++    c-sources:       cbits/foundation_mem.c
++  else
++    js-sources:      jsbits/basement.js
+diff --git a/jsbits/basement.js b/jsbits/basement.js
 new file mode 100644
-index 000000000..3d9172147
+index 0000000..4e4e590
 --- /dev/null
-+++ a/jsbits/basement.js
-@@ -0,0 +1,3 @@
++++ b/jsbits/basement.js
+@@ -0,0 +1,7 @@
 +function h$_foundation_memcmp(s1, o1, off1, s2, o2, off2, n) {
-+    h$memcmp(s1, o1 + off2, s2, o2 + off2, n);
++    return h$memcmp(s1, o1 + off2, s2, o2 + off2, n);
++}
++function h$_foundation_mem_findbyte(s, o, startofs, endofs, ty) {
++    x = $hmemchr(s, o + startofs, ty, endofs - startofs);
++    return h$ret1 == null ? endofs : x - o;
 +}
