@@ -15,13 +15,12 @@ index d33d874..3bf06bb 100644
  extra-source-files:  cbits/*.h
  
  source-repository head
-@@ -190,13 +190,17 @@ library
+@@ -190,13 +190,16 @@ library
    if os(osx)
      exposed-modules: Foundation.System.Bindings.Macos
  
 +  if os(ghcjs)
 +    js-sources: jsbits/bindings.js
-+    extra-bundled-libraries: EMCCfoundation EMCCfoundation.exported
 +
    default-extensions: NoImplicitPrelude
                        RebindableSyntax
