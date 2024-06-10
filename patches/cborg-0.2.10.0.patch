@@ -1,7 +1,7 @@
-diff --git a/cborg/src/Codec/CBOR/Decoding.hs b/cborg/src/Codec/CBOR/Decoding.hs
+diff --git a/src/Codec/CBOR/Decoding.hs b/src/Codec/CBOR/Decoding.hs
 index a7d774c..9335047 100644
---- a/cborg/src/Codec/CBOR/Decoding.hs
-+++ b/cborg/src/Codec/CBOR/Decoding.hs
+--- a/src/Codec/CBOR/Decoding.hs
++++ b/src/Codec/CBOR/Decoding.hs
 @@ -157,7 +157,7 @@ data DecodeAction s a
      | ConsumeTag     (Word# -> ST s (DecodeAction s a))
  
@@ -101,10 +101,10 @@ index a7d774c..9335047 100644
    Decoder (\k -> return (ConsumeTagCanonical (\w# -> k (W64#
  #if MIN_VERSION_base(4,17,0)
      (wordToWord64# w#)
-diff --git a/cborg/src/Codec/CBOR/FlatTerm.hs b/cborg/src/Codec/CBOR/FlatTerm.hs
+diff --git a/src/Codec/CBOR/FlatTerm.hs b/src/Codec/CBOR/FlatTerm.hs
 index 5d43e63..076ebfe 100644
---- a/cborg/src/Codec/CBOR/FlatTerm.hs
-+++ b/cborg/src/Codec/CBOR/FlatTerm.hs
+--- a/src/Codec/CBOR/FlatTerm.hs
++++ b/src/Codec/CBOR/FlatTerm.hs
 @@ -385,7 +385,7 @@ fromFlatTerm decoder ft =
      go (TkTag     n : ts) (ConsumeTagCanonical     k)
          | n <= maxWord                       = k (unW# (fromIntegral n)) >>= go ts
@@ -141,10 +141,10 @@ index 5d43e63..076ebfe 100644
  unW64# :: Word64 -> Word64#
  unW64# (W64# w#) = w#
  
-diff --git a/cborg/src/Codec/CBOR/Magic.hs b/cborg/src/Codec/CBOR/Magic.hs
+diff --git a/src/Codec/CBOR/Magic.hs b/src/Codec/CBOR/Magic.hs
 index cdeb455..8c2e6f3 100644
---- a/cborg/src/Codec/CBOR/Magic.hs
-+++ b/cborg/src/Codec/CBOR/Magic.hs
+--- a/src/Codec/CBOR/Magic.hs
++++ b/src/Codec/CBOR/Magic.hs
 @@ -59,7 +59,7 @@ module Codec.CBOR.Magic
    , intToWord64       -- :: Int    -> Word64
    , int64ToWord64     -- :: Int64  -> Word64
@@ -269,10 +269,10 @@ index cdeb455..8c2e6f3 100644
  word8ToInt64  (W8#  w#) = I64# (intToInt64# (word2Int# w#))
  word16ToInt64 (W16# w#) = I64# (intToInt64# (word2Int# w#))
  word32ToInt64 (W32# w#) = I64# (word64ToInt64# (wordToWord64# w#))
-diff --git a/cborg/src/Codec/CBOR/Read.hs b/cborg/src/Codec/CBOR/Read.hs
+diff --git a/src/Codec/CBOR/Read.hs b/src/Codec/CBOR/Read.hs
 index 6546575..7dd29a9 100644
---- a/cborg/src/Codec/CBOR/Read.hs
-+++ b/cborg/src/Codec/CBOR/Read.hs
+--- a/src/Codec/CBOR/Read.hs
++++ b/src/Codec/CBOR/Read.hs
 @@ -64,8 +64,12 @@ import qualified Data.Text.Encoding as T
  import           Data.Word
  import           GHC.Word
