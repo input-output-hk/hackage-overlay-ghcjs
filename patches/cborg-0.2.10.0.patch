@@ -1,159 +1,122 @@
 diff --git a/src/Codec/CBOR/Decoding.hs b/src/Codec/CBOR/Decoding.hs
-index a7d774c..9335047 100644
+index a7d774c..e459b81 100644
 --- a/src/Codec/CBOR/Decoding.hs
 +++ b/src/Codec/CBOR/Decoding.hs
-@@ -157,7 +157,7 @@ data DecodeAction s a
-     | ConsumeTag     (Word# -> ST s (DecodeAction s a))
+@@ -113,6 +113,11 @@ module Codec.CBOR.Decoding
  
- -- 64bit variants for 32bit machines
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     | ConsumeWord64    (Word64# -> ST s (DecodeAction s a))
-     | ConsumeNegWord64 (Word64# -> ST s (DecodeAction s a))
-     | ConsumeInt64     (Int64#  -> ST s (DecodeAction s a))
-@@ -188,7 +188,7 @@ data DecodeAction s a
+ #include "cbor.h"
  
-     | PeekTokenType  (TokenType -> ST s (DecodeAction s a))
-     | PeekAvailable  (Int#      -> ST s (DecodeAction s a))
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     | PeekByteOffset (Int64#    -> ST s (DecodeAction s a))
- #else
-     | PeekByteOffset (Int#      -> ST s (DecodeAction s a))
-@@ -208,7 +208,7 @@ data DecodeAction s a
-     | ConsumeMapLenCanonical  (Int#  -> ST s (DecodeAction s a))
-     | ConsumeTagCanonical     (Word# -> ST s (DecodeAction s a))
++#if defined(ARCH_32bit)
++#if !MIN_VERSION_ghc_prim(0,8,0)
++import           GHC.IntWord64
++#endif
++#endif
+ import           GHC.Exts
+ import           GHC.Word
+ import           GHC.Int
+@@ -343,11 +348,16 @@ toWord64 n = W64# (wordToWord64# n)
+ toInt8   n = I8#  n
+ toInt16  n = I16# n
+ toInt32  n = I32# n
+-toInt64  n = I64# n
+ toWord8  n = W8#  n
+ toWord16 n = W16# n
+ toWord32 n = W32# n
++#if WORD_SIZE_IN_BITS == 64
++toInt64  n = I64# n
+ toWord64 n = W64# n
++#else
++toInt64  n = I64# (intToInt64# n)
++toWord64 n = W64# (wordToWord64# n)
++#endif
+ #endif
  
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     | ConsumeWord64Canonical    (Word64# -> ST s (DecodeAction s a))
-     | ConsumeNegWord64Canonical (Word64# -> ST s (DecodeAction s a))
-     | ConsumeInt64Canonical     (Int64#  -> ST s (DecodeAction s a))
-@@ -420,7 +420,7 @@ decodeWord32 = Decoder (\k -> return (ConsumeWord32 (\w# -> k (toWord32 w#))))
- decodeWord64 :: Decoder s Word64
- {-# INLINE decodeWord64 #-}
- decodeWord64 =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+ -- $canonical
+@@ -423,7 +433,7 @@ decodeWord64 =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeWord (\w# -> k (toWord64 w#))))
  #else
-   Decoder (\k -> return (ConsumeWord64 (\w64# -> k (toWord64 w64#))))
-@@ -439,7 +439,7 @@ decodeNegWord = Decoder (\k -> return (ConsumeNegWord (\w# -> k (W# w#))))
- decodeNegWord64 :: Decoder s Word64
- {-# INLINE decodeNegWord64 #-}
- decodeNegWord64 =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+-  Decoder (\k -> return (ConsumeWord64 (\w64# -> k (toWord64 w64#))))
++  Decoder (\k -> return (ConsumeWord64 (\w64# -> k (W64# w64#))))
+ #endif
+ 
+ -- | Decode a negative 'Word'.
+@@ -442,7 +452,7 @@ decodeNegWord64 =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeNegWord (\w# -> k (toWord64 w#))))
  #else
-   Decoder (\k -> return (ConsumeNegWord64 (\w64# -> k (toWord64 w64#))))
-@@ -479,7 +479,7 @@ decodeInt32 = Decoder (\k -> return (ConsumeInt32 (\w# -> k (toInt32 w#))))
- decodeInt64 :: Decoder s Int64
- {-# INLINE decodeInt64 #-}
- decodeInt64 =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+-  Decoder (\k -> return (ConsumeNegWord64 (\w64# -> k (toWord64 w64#))))
++  Decoder (\k -> return (ConsumeNegWord64 (\w64# -> k (W64# w64#))))
+ #endif
+ 
+ -- | Decode an 'Int'.
+@@ -482,7 +492,7 @@ decodeInt64 =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeInt (\n# -> k (toInt64 n#))))
  #else
-   Decoder (\k -> return (ConsumeInt64 (\n64# -> k (toInt64 n64#))))
-@@ -519,7 +519,7 @@ decodeWord32Canonical = Decoder (\k -> return (ConsumeWord32Canonical (\w# -> k
- decodeWord64Canonical :: Decoder s Word64
- {-# INLINE decodeWord64Canonical #-}
- decodeWord64Canonical =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+-  Decoder (\k -> return (ConsumeInt64 (\n64# -> k (toInt64 n64#))))
++  Decoder (\k -> return (ConsumeInt64 (\n64# -> k (I64# n64#))))
+ #endif
+ 
+ -- | Decode canonical representation of a 'Word'.
+@@ -522,7 +532,7 @@ decodeWord64Canonical =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeWordCanonical (\w# -> k (toWord64 w#))))
  #else
-   Decoder (\k -> return (ConsumeWord64Canonical (\w64# -> k (toWord64 w64#))))
-@@ -538,7 +538,7 @@ decodeNegWordCanonical = Decoder (\k -> return (ConsumeNegWordCanonical (\w# ->
- decodeNegWord64Canonical :: Decoder s Word64
- {-# INLINE decodeNegWord64Canonical #-}
- decodeNegWord64Canonical =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+-  Decoder (\k -> return (ConsumeWord64Canonical (\w64# -> k (toWord64 w64#))))
++  Decoder (\k -> return (ConsumeWord64Canonical (\w64# -> k (W64# w64#))))
+ #endif
+ 
+ -- | Decode canonical representation of a negative 'Word'.
+@@ -541,7 +551,7 @@ decodeNegWord64Canonical =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeNegWordCanonical (\w# -> k (toWord64 w#))))
  #else
-   Decoder (\k -> return (ConsumeNegWord64Canonical (\w64# -> k (toWord64 w64#))))
-@@ -578,7 +578,7 @@ decodeInt32Canonical = Decoder (\k -> return (ConsumeInt32Canonical (\w# -> k (t
- decodeInt64Canonical :: Decoder s Int64
- {-# INLINE decodeInt64Canonical #-}
- decodeInt64Canonical =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+-  Decoder (\k -> return (ConsumeNegWord64Canonical (\w64# -> k (toWord64 w64#))))
++  Decoder (\k -> return (ConsumeNegWord64Canonical (\w64# -> k (W64# w64#))))
+ #endif
+ 
+ -- | Decode canonical representation of an 'Int'.
+@@ -581,7 +591,7 @@ decodeInt64Canonical =
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeIntCanonical (\n# -> k (toInt64 n#))))
  #else
-   Decoder (\k -> return (ConsumeInt64Canonical (\n64# -> k (toInt64 n64#))))
-@@ -752,7 +752,7 @@ decodeTag = Decoder (\k -> return (ConsumeTag (\w# -> k (W# w#))))
- decodeTag64 :: Decoder s Word64
- {-# INLINE decodeTag64 #-}
+-  Decoder (\k -> return (ConsumeInt64Canonical (\n64# -> k (toInt64 n64#))))
++  Decoder (\k -> return (ConsumeInt64Canonical (\n64# -> k (I64# n64#))))
+ #endif
+ 
+ -- | Decode an 'Integer'.
+@@ -754,7 +764,7 @@ decodeTag64 :: Decoder s Word64
  decodeTag64 =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+ #if defined(ARCH_64bit)
    Decoder (\k -> return (ConsumeTag (\w# -> k (W64#
- #if MIN_VERSION_base(4,17,0)
+-#if MIN_VERSION_base(4,17,0)
++#if MIN_VERSION_base(4,17,0) || (defined(ARCH_32bit) && !MIN_VERSION_ghc_prim(0,8,0))
      (wordToWord64# w#)
-@@ -779,7 +779,7 @@ decodeTagCanonical = Decoder (\k -> return (ConsumeTagCanonical (\w# -> k (W# w#
- decodeTag64Canonical :: Decoder s Word64
- {-# INLINE decodeTag64Canonical #-}
- decodeTag64Canonical =
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   Decoder (\k -> return (ConsumeTagCanonical (\w# -> k (W64#
- #if MIN_VERSION_base(4,17,0)
-     (wordToWord64# w#)
-diff --git a/src/Codec/CBOR/FlatTerm.hs b/src/Codec/CBOR/FlatTerm.hs
-index 5d43e63..076ebfe 100644
---- a/src/Codec/CBOR/FlatTerm.hs
-+++ b/src/Codec/CBOR/FlatTerm.hs
-@@ -385,7 +385,7 @@ fromFlatTerm decoder ft =
-     go (TkTag     n : ts) (ConsumeTagCanonical     k)
-         | n <= maxWord                       = k (unW# (fromIntegral n)) >>= go ts
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     -- 64bit variants for 32bit machines
-     go (TkInt       n : ts) (ConsumeWord64    k)
-       | n >= 0                                   = k (unW64# (fromIntegral n)) >>= go ts
-@@ -468,7 +468,7 @@ fromFlatTerm decoder ft =
-     -- We don't have real bytes so we have to give these two operations
-     -- different interpretations: remaining tokens and just 0 for offsets.
-     go ts        (PeekAvailable k) = k (unI# (length ts)) >>= go ts
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     go ts        (PeekByteOffset k)= k (unI64# 0) >>= go ts
  #else
-     go ts        (PeekByteOffset k)= k 0# >>= go ts
-@@ -529,7 +529,7 @@ fromFlatTerm decoder ft =
-     go ts (ConsumeUtf8ByteArrayCanonical _) = unexpected "decodeUtf8ByteArrayCanonical" ts
-     go ts (ConsumeSimpleCanonical  _)       = unexpected "decodeSimpleCanonical"        ts
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     -- 64bit variants for 32bit machines
-     go ts (ConsumeWord64    _) = unexpected "decodeWord64"    ts
-     go ts (ConsumeNegWord64 _) = unexpected "decodeNegWord64" ts
-@@ -744,7 +744,7 @@ unF#   (F#   f#) = f#
- unD# :: Double -> Double#
- unD#   (D#   f#) = f#
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
- unW64# :: Word64 -> Word64#
- unW64# (W64# w#) = w#
- 
+     w#
+@@ -781,7 +791,7 @@ decodeTag64Canonical :: Decoder s Word64
+ decodeTag64Canonical =
+ #if defined(ARCH_64bit)
+   Decoder (\k -> return (ConsumeTagCanonical (\w# -> k (W64#
+-#if MIN_VERSION_base(4,17,0)
++#if MIN_VERSION_base(4,17,0) || (defined(ARCH_32bit) && !MIN_VERSION_ghc_prim(0,8,0))
+     (wordToWord64# w#)
+ #else
+     w#
+@@ -986,7 +996,7 @@ type ByteOffset = Int64
+ -- @since 0.2.2.0
+ peekByteOffset :: Decoder s ByteOffset
+ peekByteOffset = Decoder (\k -> return (PeekByteOffset (\off# -> k (I64#
+-#if MIN_VERSION_base(4,17,0)
++#if MIN_VERSION_base(4,17,0) && !defined(ARCH_32bit)
+         (intToInt64# off#)
+ #else
+         off#
 diff --git a/src/Codec/CBOR/Magic.hs b/src/Codec/CBOR/Magic.hs
-index cdeb455..8c2e6f3 100644
+index cdeb455..5e864b9 100644
 --- a/src/Codec/CBOR/Magic.hs
 +++ b/src/Codec/CBOR/Magic.hs
-@@ -59,7 +59,7 @@ module Codec.CBOR.Magic
-   , intToWord64       -- :: Int    -> Word64
-   , int64ToWord64     -- :: Int64  -> Word64
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-   , word8ToInt64      -- :: Word8  -> Int64
-   , word16ToInt64     -- :: Word16 -> Int64
-   , word32ToInt64     -- :: Word32 -> Int64
 @@ -121,10 +121,15 @@ import           Data.Bits ((.|.), unsafeShiftL)
  #endif
  
@@ -171,106 +134,47 @@ index cdeb455..8c2e6f3 100644
  #endif
  
  --------------------------------------------------------------------------------
-@@ -166,7 +171,7 @@ grabWord32 (Ptr ip#) = W32# (wordToWord32# (byteSwap32# (word32ToWord# (indexWor
- grabWord16 (Ptr ip#) = W16# (narrow16Word# (byteSwap16# (indexWord16OffAddr# ip# 0#)))
- grabWord32 (Ptr ip#) = W32# (narrow32Word# (byteSwap32# (indexWord32OffAddr# ip# 0#)))
- #endif
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- #if MIN_VERSION_base(4,17,0)
- grabWord64 (Ptr ip#) = W64# (wordToWord64# (byteSwap# (word64ToWord# (indexWord64OffAddr# ip# 0#))))
- #else
-@@ -379,7 +384,7 @@ wordToFloat64 (W64# w#) = D# (wordToFloat64# w#)
- {-# INLINE wordToFloat64 #-}
- 
- -- | Cast an unboxed word to an unboxed double.
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- wordToFloat64# :: Word# -> Double#
- #else
- wordToFloat64# :: Word64# -> Double#
-@@ -400,7 +405,7 @@ wordToFloat64# w# =
- word8ToWord  :: Word8  -> Word
- word16ToWord :: Word16 -> Word
- word32ToWord :: Word32 -> Word
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- word64ToWord :: Word64 -> Word
- #else
- word64ToWord :: Word64 -> Maybe Word
-@@ -408,14 +413,14 @@ word64ToWord :: Word64 -> Maybe Word
- 
- word8ToInt  :: Word8  -> Int
- word16ToInt :: Word16 -> Int
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- word32ToInt :: Word32 -> Int
- #else
- word32ToInt :: Word32 -> Maybe Int
- #endif
- word64ToInt :: Word64 -> Maybe Int
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
- word8ToInt64  :: Word8  -> Int64
- word16ToInt64 :: Word16 -> Int64
- word32ToInt64 :: Word32 -> Int64
-@@ -446,7 +451,7 @@ int64ToWord64 = fromIntegral
- word8ToWord  (W8#  w#) = W# (word8ToWord# w#)
- word16ToWord (W16# w#) = W# (word16ToWord# w#)
- word32ToWord (W32# w#) = W# (word32ToWord# w#)
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- #if MIN_VERSION_base(4,17,0)
- word64ToWord (W64# w#) = W# (word64ToWord# w#)
- #else
-@@ -462,7 +467,7 @@ word64ToWord (W64# w64#) =
- word8ToWord  (W8#  w#) = W# w#
- word16ToWord (W16# w#) = W# w#
- word32ToWord (W32# w#) = W# w#
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- word64ToWord (W64# w#) = W# w#
- #else
- word64ToWord (W64# w64#) =
-@@ -480,7 +485,7 @@ word64ToWord (W64# w64#) =
- #if MIN_VERSION_ghc_prim(0,8,0)
- word8ToInt  (W8#  w#) = I# (word2Int# (word8ToWord# w#))
- word16ToInt (W16# w#) = I# (word2Int# (word16ToWord# w#))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
+@@ -484,7 +489,7 @@ word16ToInt (W16# w#) = I# (word2Int# (word16ToWord# w#))
  word32ToInt (W32# w#) = I# (word2Int# (word32ToWord# w#))
  #else
  word32ToInt (W32# w#) =
-@@ -492,7 +497,7 @@ word32ToInt (W32# w#) =
- word8ToInt  (W8#  w#) = I# (word2Int# w#)
- word16ToInt (W16# w#) = I# (word2Int# w#)
- 
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- word32ToInt (W32# w#) = I# (word2Int# w#)
- #else
- word32ToInt (W32# w#) =
-@@ -502,7 +507,7 @@ word32ToInt (W32# w#) =
+-  case isTrue# (w# `ltWord#` 0x80000000##) of
++  case isTrue# (w# `ltWord32#` (wordToWord32# 0x80000000##)) of
+     True  -> Just (I# (word2Int# (word32ToWord# w#)))
+     False -> Nothing
  #endif
- #endif
- 
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
- word64ToInt (W64# w#) =
- #if MIN_VERSION_base(4,17,0)
-   case isTrue# (word64ToWord# w# `ltWord#` 0x8000000000000000##) of
-@@ -529,7 +534,7 @@ word64ToInt (W64# w#) =
- {-# INLINE word32ToInt #-}
+@@ -530,17 +535,29 @@ word64ToInt (W64# w#) =
  {-# INLINE word64ToInt #-}
  
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
+ #if defined(ARCH_32bit)
++#if MIN_VERSION_ghc_prim(0,8,0)
++word8ToInt64  (W8#  w#) = I64# (intToInt64# (word2Int# (word8ToWord# w#)))
++word16ToInt64 (W16# w#) = I64# (intToInt64# (word2Int# (word16ToWord# w#)))
++word32ToInt64 (W32# w#) = I64# (word64ToInt64# (wordToWord64# (word32ToWord# w#)))
++#else
  word8ToInt64  (W8#  w#) = I64# (intToInt64# (word2Int# w#))
  word16ToInt64 (W16# w#) = I64# (intToInt64# (word2Int# w#))
  word32ToInt64 (W32# w#) = I64# (word64ToInt64# (wordToWord64# w#))
++#endif
+ word64ToInt64 (W64# w#) =
+   case isTrue# (w# `ltWord64#` uncheckedShiftL64# (wordToWord64# 1##) 63#) of
+     True  -> Just (I64# (word64ToInt64# w#))
+     False -> Nothing
+ 
++#if MIN_VERSION_ghc_prim(0,8,0)
++word8ToWord64  (W8#  w#) = W64# (wordToWord64# (word8ToWord# w#))
++word16ToWord64 (W16# w#) = W64# (wordToWord64# (word16ToWord# w#))
++word32ToWord64 (W32# w#) = W64# (wordToWord64# (word32ToWord# w#))
++#else
+ word8ToWord64  (W8#  w#) = W64# (wordToWord64# w#)
+ word16ToWord64 (W16# w#) = W64# (wordToWord64# w#)
+ word32ToWord64 (W32# w#) = W64# (wordToWord64# w#)
++#endif
+ 
+ {-# INLINE word8ToInt64  #-}
+ {-# INLINE word16ToInt64 #-}
 diff --git a/src/Codec/CBOR/Read.hs b/src/Codec/CBOR/Read.hs
-index 6546575..7dd29a9 100644
+index 6546575..3a57b68 100644
 --- a/src/Codec/CBOR/Read.hs
 +++ b/src/Codec/CBOR/Read.hs
 @@ -64,8 +64,12 @@ import qualified Data.Text.Encoding as T
@@ -286,238 +190,85 @@ index 6546575..7dd29a9 100644
  import           GHC.Exts
  import           GHC.Float (float2Double)
  import           Data.Typeable
-@@ -247,7 +251,7 @@ data SlowPath s a
-    | SlowConsumeTokenByteArray     {-# UNPACK #-} !ByteString (BA.ByteArray -> ST s (DecodeAction s a)) {-# UNPACK #-} !Int
-    | SlowConsumeTokenString        {-# UNPACK #-} !ByteString (T.Text       -> ST s (DecodeAction s a)) {-# UNPACK #-} !Int
-    | SlowConsumeTokenUtf8ByteArray {-# UNPACK #-} !ByteString (BA.ByteArray -> ST s (DecodeAction s a)) {-# UNPACK #-} !Int
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-    | SlowPeekByteOffset            {-# UNPACK #-} !ByteString (Int64#       -> ST s (DecodeAction s a))
- #else
-    | SlowPeekByteOffset            {-# UNPACK #-} !ByteString (Int#         -> ST s (DecodeAction s a))
-@@ -293,7 +297,7 @@ go_fast !bs da@(ConsumeWord32 k) =
-     case tryConsumeWord (BS.unsafeHead bs) bs of
-       DecodeFailure           -> go_fast_end bs da
-       DecodedToken sz (W# w#) ->
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-                                  k w# >>= go_fast (BS.unsafeDrop sz bs)
- #else
-         case gtWord# w# 0xffffffff## of
-@@ -331,7 +335,7 @@ go_fast !bs da@(ConsumeInt32 k) =
-     case tryConsumeInt (BS.unsafeHead bs) bs of
-       DecodeFailure           -> go_fast_end bs da
-       DecodedToken sz (I# n#) ->
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-                                  k n# >>= go_fast (BS.unsafeDrop sz bs)
- #else
-         case (n# ># 0x7fffffff#) `orI#` (n# <# -0x80000000#) of
-@@ -387,7 +391,7 @@ go_fast !bs da@(ConsumeWord32Canonical k) =
-   where
-     w_out_of_range :: Word# -> Int#
-     w_out_of_range _w# =
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-       0#
- #else
-       gtWord# _w# 0xffffffff##
-@@ -433,7 +437,7 @@ go_fast !bs da@(ConsumeInt32Canonical k) =
-   where
-     n_out_of_range :: Int# -> Int#
-     n_out_of_range _n# =
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-       0#
- #else
-       (_n# ># 0x7fffffff#) `orI#` (_n# <# -0x80000000#)
-@@ -462,7 +466,7 @@ go_fast !bs da@(ConsumeTagCanonical k) =
-         | isWordCanonical sz w  -> k w# >>= go_fast (BS.unsafeDrop sz bs)
-         | otherwise             -> go_fast_end bs da
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
- go_fast !bs da@(ConsumeWord64 k) =
-   case tryConsumeWord64 (BS.unsafeHead bs) bs of
+@@ -510,8 +514,8 @@ go_fast !bs da@(ConsumeNegWord64Canonical k) =
+ go_fast !bs da@(ConsumeInt64Canonical k) =
+   case tryConsumeInt64 (BS.unsafeHead bs) bs of
      DecodeFailure             -> go_fast_end bs da
-@@ -774,7 +778,7 @@ go_fast_end !bs (ConsumeWord32 k) =
-     case tryConsumeWord (BS.unsafeHead bs) bs of
-       DecodeFailure           -> return $! SlowFail bs "expected word32"
-       DecodedToken sz (W# w#) ->
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-                                  k w# >>= go_fast_end (BS.unsafeDrop sz bs)
- #else
-         case gtWord# w# 0xffffffff## of
-@@ -812,7 +816,7 @@ go_fast_end !bs (ConsumeInt32 k) =
-     case tryConsumeInt (BS.unsafeHead bs) bs of
-       DecodeFailure           -> return $! SlowFail bs "expected int32"
-       DecodedToken sz (I# n#) ->
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-                                  k n# >>= go_fast_end (BS.unsafeDrop sz bs)
- #else
-         case (n# ># 0x7fffffff#) `orI#` (n# <# -0x80000000#) of
-@@ -868,7 +872,7 @@ go_fast_end !bs (ConsumeWord32Canonical k) =
-   where
-     w_out_of_range :: Word# -> Int#
-     w_out_of_range _w# =
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-       0#
- #else
-       gtWord# _w# 0xffffffff##
-@@ -917,7 +921,7 @@ go_fast_end !bs (ConsumeInt32Canonical k) =
-   where
-     n_out_of_range :: Int# -> Int#
-     n_out_of_range _n# =
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-       0#
- #else
-       (_n# ># 0x7fffffff#) `orI#` (_n# <# -0x80000000#)
-@@ -946,7 +950,7 @@ go_fast_end !bs (ConsumeTagCanonical k) =
-         | isWordCanonical sz w  -> k w# >>= go_fast_end (BS.unsafeDrop sz bs)
-         | otherwise             -> return $! SlowFail bs "non-canonical tag"
+-    DecodedToken sz i@(I64# i#)
+-      | isInt64Canonical sz i  -> k i# >>= go_fast (BS.unsafeDrop sz bs)
++    DecodedToken sz (I64# i#)
++      | isInt64Canonical sz i# -> k i# >>= go_fast (BS.unsafeDrop sz bs)
+       | otherwise              -> go_fast_end bs da
  
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
- go_fast_end !bs (ConsumeWord64 k) =
-   case tryConsumeWord64 (BS.unsafeHead bs) bs of
-     DecodeFailure             -> return $! SlowFail bs "expected word64"
-@@ -1561,7 +1565,7 @@ isIntCanonical sz i
-   where
-     w = intToWord i
+ go_fast !bs da@(ConsumeListLen64Canonical k) =
+@@ -994,8 +998,8 @@ go_fast_end !bs (ConsumeNegWord64Canonical k) =
+ go_fast_end !bs (ConsumeInt64Canonical k) =
+   case tryConsumeInt64 (BS.unsafeHead bs) bs of
+     DecodeFailure             -> return $! SlowFail bs "expected int64"
+-    DecodedToken sz i@(I64# i#)
+-      | isInt64Canonical sz i  -> k i# >>= go_fast_end (BS.unsafeDrop sz bs)
++    DecodedToken sz (I64# i#)
++      | isInt64Canonical sz i# -> k i# >>= go_fast_end (BS.unsafeDrop sz bs)
+       | otherwise              -> return $! SlowFail bs "non-canonical int64"
  
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
+ go_fast_end !bs (ConsumeListLen64Canonical k) =
+@@ -1271,7 +1275,7 @@ go_slow da bs !offset = do
+ 
+     SlowPeekByteOffset bs' k ->
+       lift
+-#if MIN_VERSION_base(4,17,0)
++#if MIN_VERSION_base(4,17,0) && !defined(ARCH_32bit)
+         (k (int64ToInt# off#))
+ #else
+         (k off#)
+@@ -1381,7 +1385,7 @@ go_slow_overlapped da sz bs_cur bs_next !offset =
+       SlowPeekByteOffset bs_empty k ->
+         assert (BS.null bs_empty) $ do
+         lift
+-#if MIN_VERSION_base(4,17,0)
++#if MIN_VERSION_base(4,17,0) && !defined(ARCH_32bit)
+           (k (int64ToInt# off#))
+ #else
+           (k off#)
+@@ -1565,17 +1569,17 @@ isIntCanonical sz i
  {-# INLINE isWord64Canonical #-}
  isWord64Canonical :: Int -> Word64 -> Bool
  isWord64Canonical sz w
-@@ -1622,7 +1626,7 @@ tryConsumeWord hdr !bs = case word8ToWord hdr of
-   0x18 -> DecodedToken 2 $! word8ToWord  (eatTailWord8 bs)
-   0x19 -> DecodedToken 3 $! word16ToWord (eatTailWord16 bs)
-   0x1a -> DecodedToken 5 $! word32ToWord (eatTailWord32 bs)
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x1b -> DecodedToken 9 $! word64ToWord (eatTailWord64 bs)
- #else
-   0x1b -> case word64ToWord (eatTailWord64 bs) of
-@@ -1663,7 +1667,7 @@ tryConsumeNegWord hdr !bs = case word8ToWord hdr of
-   0x38 -> DecodedToken 2 $! (word8ToWord  (eatTailWord8 bs))
-   0x39 -> DecodedToken 3 $! (word16ToWord (eatTailWord16 bs))
-   0x3a -> DecodedToken 5 $! (word32ToWord (eatTailWord32 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x3b -> DecodedToken 9 $! (word64ToWord (eatTailWord64 bs))
- #else
-   0x3b -> case word64ToWord (eatTailWord64 bs) of
-@@ -1703,7 +1707,7 @@ tryConsumeInt hdr !bs = case word8ToWord hdr of
-   0x17 -> DecodedToken 1 23
-   0x18 -> DecodedToken 2 $! (word8ToInt  (eatTailWord8 bs))
-   0x19 -> DecodedToken 3 $! (word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x1a -> DecodedToken 5 $! (word32ToInt (eatTailWord32 bs))
- #else
-   0x1a -> case word32ToInt (eatTailWord32 bs) of
-@@ -1741,7 +1745,7 @@ tryConsumeInt hdr !bs = case word8ToWord hdr of
-   0x37 -> DecodedToken 1 (-24)
-   0x38 -> DecodedToken 2 $! (-1 - word8ToInt  (eatTailWord8 bs))
-   0x39 -> DecodedToken 3 $! (-1 - word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x3a -> DecodedToken 5 $! (-1 - word32ToInt (eatTailWord32 bs))
- #else
-   0x3a -> case word32ToInt (eatTailWord32 bs) of
-@@ -1795,7 +1799,7 @@ tryConsumeInteger hdr !bs = case word8ToWord hdr of
-           in DecodedToken sz (BigIntToken (isWordCanonical sz (word32ToWord w))   $! toInteger w)
+-  | sz == 2   = w > 0x17)
+-  | sz == 3   = w > 0xff)
+-  | sz == 5   = w > 0xffff)
+-  | sz == 9   = w > 0xffffffff)
++  | sz == 2   = w > 0x17
++  | sz == 3   = w > 0xff
++  | sz == 5   = w > 0xffff
++  | sz == 9   = w > 0xffffffff
+   | otherwise = True
+ 
+ {-# INLINE isInt64Canonical #-}
+ isInt64Canonical :: Int -> Int64# -> Bool
+ isInt64Canonical sz i#
+-  | isTrue# (i# `ltInt64#` intToInt64# 0#) = isWord64Canonical sz (not64# w#)
+-  | otherwise                              = isWord64Canonical sz         w#
++  | isTrue# (i# `ltInt64#` intToInt64# 0#) = isWord64Canonical sz (W64# (not64# w#))
++  | otherwise                              = isWord64Canonical sz         (W64# w#)
+   where
+     w# = int64ToWord64# i#
+ #endif
+@@ -1796,7 +1800,7 @@ tryConsumeInteger hdr !bs = case word8ToWord hdr of
    0x1b -> let !w = eatTailWord64 bs
                sz = 9
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-           in DecodedToken sz (BigIntToken (isWord64Canonical sz (word64ToWord w)) $! toInteger w)
+ #if defined(ARCH_32bit)
+-          in DecodedToken sz (BigIntToken (isWord64Canonical sz (word64ToWord w)) $! toInteger w)
++          in DecodedToken sz (BigIntToken (isWord64Canonical sz w) $! toInteger w)
  #else
            in DecodedToken sz (BigIntToken (isWordCanonical sz (word64ToWord w))   $! toInteger w)
-@@ -1837,7 +1841,7 @@ tryConsumeInteger hdr !bs = case word8ToWord hdr of
-           in DecodedToken sz (BigIntToken (isWordCanonical sz (word32ToWord w))   $! (-1 - toInteger w))
+ #endif
+@@ -1838,7 +1842,7 @@ tryConsumeInteger hdr !bs = case word8ToWord hdr of
    0x3b -> let !w = eatTailWord64 bs
                sz = 9
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-           in DecodedToken sz (BigIntToken (isWord64Canonical sz (word64ToWord w)) $! (-1 - toInteger w))
+ #if defined(ARCH_32bit)
+-          in DecodedToken sz (BigIntToken (isWord64Canonical sz (word64ToWord w)) $! (-1 - toInteger w))
++          in DecodedToken sz (BigIntToken (isWord64Canonical sz w) $! (-1 - toInteger w))
  #else
            in DecodedToken sz (BigIntToken (isWordCanonical sz (word64ToWord w))   $! (-1 - toInteger w))
-@@ -1951,7 +1955,7 @@ tryConsumeListLen hdr !bs = case word8ToWord hdr of
-   0x97 -> DecodedToken 1 23
-   0x98 -> DecodedToken 2 (word8ToInt  (eatTailWord8 bs))
-   0x99 -> DecodedToken 3 (word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x9a -> DecodedToken 5 (word32ToInt (eatTailWord32 bs))
- #else
-   0x9a -> case word32ToInt (eatTailWord32 bs) of
-@@ -1994,7 +1998,7 @@ tryConsumeMapLen hdr !bs = case word8ToWord hdr of
-   0xb7 -> DecodedToken 1 23
-   0xb8 -> DecodedToken 2 $! (word8ToInt  (eatTailWord8 bs))
-   0xb9 -> DecodedToken 3 $! (word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0xba -> DecodedToken 5 $! (word32ToInt (eatTailWord32 bs))
- #else
-   0xba -> case word32ToInt (eatTailWord32 bs) of
-@@ -2052,7 +2056,7 @@ tryConsumeListLenOrIndef hdr !bs = case word8ToWord hdr of
-   0x97 -> DecodedToken 1 23
-   0x98 -> DecodedToken 2 $! (word8ToInt  (eatTailWord8 bs))
-   0x99 -> DecodedToken 3 $! (word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0x9a -> DecodedToken 5 $! (word32ToInt (eatTailWord32 bs))
- #else
-   0x9a -> case word32ToInt (eatTailWord32 bs) of
-@@ -2097,7 +2101,7 @@ tryConsumeMapLenOrIndef hdr !bs = case word8ToWord hdr of
-   0xb7 -> DecodedToken 1 23
-   0xb8 -> DecodedToken 2 $! (word8ToInt  (eatTailWord8 bs))
-   0xb9 -> DecodedToken 3 $! (word16ToInt (eatTailWord16 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0xba -> DecodedToken 5 $! (word32ToInt (eatTailWord32 bs))
- #else
-   0xba -> case word32ToInt (eatTailWord32 bs) of
-@@ -2143,7 +2147,7 @@ tryConsumeTag hdr !bs = case word8ToWord hdr of
-   0xd8 -> DecodedToken 2 $! (word8ToWord  (eatTailWord8 bs))
-   0xd9 -> DecodedToken 3 $! (word16ToWord (eatTailWord16 bs))
-   0xda -> DecodedToken 5 $! (word32ToWord (eatTailWord32 bs))
--#if defined(ARCH_64bit)
-+#if defined(ARCH_64bit) || defined(ghcjs_HOST_OS)
-   0xdb -> DecodedToken 9 $! (word64ToWord (eatTailWord64 bs))
- #else
-   0xdb -> case word64ToWord (eatTailWord64 bs) of
-@@ -2156,7 +2160,7 @@ tryConsumeTag hdr !bs = case word8ToWord hdr of
- -- 64-on-32 bit code paths
- --
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
- tryConsumeWord64 :: Word8 -> ByteString -> DecodedToken Word64
- tryConsumeWord64 hdr !bs = case word8ToWord hdr of
-   -- Positive integers (type 0)
-@@ -2533,7 +2537,7 @@ readBytes16 bs
-     lengthCanonical = isIntCanonical hdrsz n
- 
- readBytes32 bs = case word32ToInt (eatTailWord32 bs) of
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     Just n
- #else
-     n
-@@ -2545,7 +2549,7 @@ readBytes32 bs = case word32ToInt (eatTailWord32 bs) of
-       -- if n > bound then slow path, multi-chunk
-       | otherwise -> DecodedToken hdrsz $ TooLong (isIntCanonical hdrsz n) n
- 
--#if defined(ARCH_32bit)
-+#if defined(ARCH_32bit) && !defined(ghcjs_HOST_OS)
-     Nothing       -> DecodeFailure
  #endif
-   where
-
