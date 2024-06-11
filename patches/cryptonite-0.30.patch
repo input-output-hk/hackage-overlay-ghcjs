@@ -88,16 +88,16 @@ index 000000000..01e9c5078
 +}
 +
 +var h$cryptonite$buffers     = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-+var h$cypronite$buffers = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
++var h$cryptonite$bufferSizes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 +
 +function h$cryptonite$getTmpBuffer(n, minSize) {
-+  var sn = h$cypronite$buffers[n];
++  var sn = h$cryptonite$bufferSizes[n];
 +  if(sn < minSize) {
 +    if(sn > 0) {
 +      _free(h$cryptonite$buffers[n]);
 +    }
 +    h$cryptonite$buffers[n] = _malloc(2*minSize); // fixme 2* shouldn't be needed
-+    h$cypronite$buffers[n] = minSize;
++    h$cryptonite$bufferSizes[n] = minSize;
 +  }
 +  return h$cryptonite$buffers[n];
 +}
@@ -438,7 +438,6 @@ index 000000000..01e9c5078
 +
 +/* chacha */
 +var h$chacha_ctx_size = 132;
-+var h$chacha_state_size = 64;
 +
 +function h$cryptonite_chacha_generate(dst_d, dst_o, ctx_d, ctx_o, bytes) {
 +  h$cryptonite$logWrapper("h$cryptonite_chacha_generate");
@@ -467,25 +466,6 @@ index 000000000..01e9c5078
 +  h$cryptonite$copyFromHeap(ctx_ptr, ctx_d, ctx_o, h$chacha_ctx_size);
 +}
 +
-+function h$cryptonite_chacha_random( rounds, dst_d, dst_o, st_d, st_o, bytes) {
-+  var dst_ptr = h$cryptonite$getTmpBufferWith(0, dst_d, dst_o, bytes);
-+      st_ptr  = h$cryptonite$getTmpBufferWith(1, st_d, st_o, h$chacha_state_size);
-+  _cryptonite_chacha_random( rounds, dst_ptr, st_ptr, bytes);
-+  // we might have modified the state.
-+  h$cryptonite$copyFromHeap(st_ptr, st_d, st_o, h$chacha_state_size);
-+  h$cryptonite$copyFromHeap(dst_ptr, dst_d, dst_o, bytes);
-+}
-+
-+function h$cryptonite_chacha_init_core( st_d, st_o, keylen, key_d, key_o, ivlen, iv_d, iv_o) {
-+  var key_ptr = h$cryptonite$getTmpBufferWith(0, key_d, key_o, keylen),
-+      iv_ptr  = h$cryptonite$getTmpBufferWith(1, iv_d, iv_o, ivlen),
-+      st_ptr = h$cryptonite$getTmpBuffer(2, h$chacha_state_size);
-+  _cryptonite_chacha_init_core(st_ptr, keylen, key_ptr, ivlen, iv_ptr);
-+  h$cryptonite$copyFromHeap(st_ptr, st_d, st_o, h$chacha_state_size);
-+}
-+
-+
-+
 +/* poly1305 */
 +var h$poly1305_ctx_size = 88;
 +var h$poly1305_key_size = 32;
@@ -511,12 +491,6 @@ index 000000000..01e9c5078
 +  _cryptonite_poly1305_finalize(mac8_ptr, ctx_ptr);
 +  h$cryptonite$copyFromHeap(mac8_ptr, mac8_d, mac8_o, h$poly1305_mac_size);
 +}
-+
-+function h$cryptonite_aes_cpu_init() {
-+  h$ret1 = _cryptonite_aes_cpu_init();
-+  return { dv: new DataView(HEAPU8.buffer), u8: HEAPU8 };
-+}
-+
 +// temporary fixes
 +
 +// XXX fix this in thrunner.js probably
