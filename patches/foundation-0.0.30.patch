@@ -1,3 +1,19 @@
+diff --git a/cbits/foundation_prim.h b/cbits/foundation_prim.h
+index 81eb475..6ac0241 100644
+--- a/cbits/foundation_prim.h
++++ b/cbits/foundation_prim.h
+@@ -1,6 +1,11 @@
+ #ifndef FOUNDATION_PRIM_H
+ #define FOUNDATION_PRIM_H
++
++#ifdef EMSCRIPTEN
++typedef int StgInt;
++#else
+ #include "Rts.h"
++#endif
+ 
+ typedef StgInt FsOffset;
+ typedef StgInt FsCountOf;
 diff --git a/foundation.cabal b/foundation.cabal
 index d33d874..fca3fc9 100644
 --- a/foundation.cabal
@@ -35,10 +51,49 @@ index d33d874..fca3fc9 100644
      build-depends:   base
 diff --git a/jsbits/bindings.js b/jsbits/bindings.js
 new file mode 100644
-index 0000000..fc51a85
+index 0000000..f9874b3
 --- /dev/null
 +++ b/jsbits/bindings.js
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,67 @@
++
++
++// These functions have been copied here from rts/js/mem.js (GHC 9.10+)
++// to provide compatibility with earlier versions of GHC. They should
++// be removed here when support for GHC earlier than 9.10 is dropped.
++
++function h$foundation$compat$withCBufferOnHeap(str_d, str_o, len, cont) {
++    var str = _malloc(len);
++    if(str_d !== null) h$foundation$compat$copyToHeap(str_d, str_o, str, len);
++    var ret = cont(str);
++    _free(str);
++    return ret;
++}
++
++function h$foundation$compat$withOutBufferOnHeap(ptr_d, ptr_o, len, cont) {
++    var ptr = _malloc(len);
++    h$foundation$compat$copyToHeap(ptr_d, ptr_o, ptr, len);
++    var ret = cont(ptr);
++    h$foundation$compat$copyFromHeap(ptr, ptr_d, ptr_o, len);
++    _free(ptr);
++    return ret;
++  }
++
++function h$foundation$compat$copyToHeap(buf_d, buf_o, tgt, len) {
++    if(len === 0) return;
++    var u8 = buf_d.u8;
++    for(var i=0;i<len;i++) {
++        Module.HEAPU8[tgt+i] = u8[buf_o+i];
++    }
++}
++
++function h$foundation$compat$copyFromHeap(src, buf_d, buf_o, len) {
++    var u8 = buf_d.u8;
++    for(var i=0;i<len;i++) {
++        u8[buf_o+i] = Module.HEAPU8[src+i];
++    }
++}
++
++// **** End backwards compatibility ****
 +
 +// EMCC:EXPORTED_FUNCTIONS _malloc _free
 +// EMCC:EXPORTED_FUNCTIONS _foundation_rngV1_generate
@@ -68,19 +123,3 @@ index 0000000..fc51a85
 +    });
 +}
 \ No newline at end of file
-diff --git a/cbits/foundation_prim.h b/cbits/foundation_prim.h
-index 81eb475..6ac0241 100644
---- a/cbits/foundation_prim.h
-+++ b/cbits/foundation_prim.h
-@@ -1,6 +1,11 @@
- #ifndef FOUNDATION_PRIM_H
- #define FOUNDATION_PRIM_H
-+
-+#ifdef EMSCRIPTEN
-+typedef int StgInt;
-+#else
- #include "Rts.h"
-+#endif
- 
- typedef StgInt FsOffset;
- typedef StgInt FsCountOf;
