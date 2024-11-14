@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>
+    entropy-0.4.1.7
+  </title>
+  <style>
+    ul.build-depends {
+      list-style: none;
+    }
+
+    ul.build-depends li {
+      display: inline;
+    }
+
+    ul.build-depends li:not(:last-child):after {
+      content: ",";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container px-4 py-5">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="../../index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-packages/index.html">All packages</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-package-versions/index.html">All package versions</a>
+      </li>
+    </ul>
+    <h1 class="py-5">
+      entropy-0.4.1.7
+    </h1>
+    <dl class="row class=" px-4 py-5">
+      <dt class="col-sm-3">Synopsis</dt>
+      <dd class="col-sm-9">
+        <p>A platform independent entropy source</p>
+      </dd>
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9">
+        <p>A mostly platform independent method to obtain cryptographically strong entropy
+(RDRAND, urandom, CryptAPI, and patches welcome)
+Users looking for cryptographically strong (number-theoretically
+sound) PRNGs should see the &#39;DRBG&#39; package too.</p>
+      </dd>
+      <dt class="col-sm-3">Author</dt>
+      <dd class="col-sm-9">
+        <p>Thomas DuBuisson &lt;thomas.dubuisson@gmail.com&gt;</p>
+      </dd>
+      <dt class="col-sm-3">Maintainer</dt>
+      <dd class="col-sm-9">
+        <p>Thomas DuBuisson &lt;thomas.dubuisson@gmail.com&gt;</p>
+      </dd>
+      <dt class="col-sm-3">License</dt>
+      <dd class="col-sm-9">
+        <p>BSD3</p>
+      </dd>
+      <dt class="col-sm-3">Source</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+                  </dl>
+      </dd>
+      <dt class="col-sm-3">Timestamp</dt>
+      <dd class="col-sm-9">
+        <p></p>
+      </dd>
+      <dt class="col-sm-3">Revisions</dt>
+      <dd class="col-sm-9">
+        <p>None</p>
+      </dd>
+      <dt class="col-sm-3">Dependencies</dt>
+      <dd class="col-sm-9">
+        <dl>
+          <dt>library entropy:</dt>
+          <dd>
+            <ul class="build-depends">
+            <li>[&quot;base &gt;=4.8 &amp;&amp; &lt;5&quot;,&quot;bytestring&quot;]</li>
+            </ul>
+            <p>if (!(impl(ghcjs &gt;=0) || os(ghcjs)) &amp;&amp; (!os(windows) &amp;&amp; !os(halvm)))</p>
+            <ul class="build-depends">
+            <li>unix &lt;2.8</li>
+            </ul>
+<p>if (!(impl(ghcjs &gt;=0) || os(ghcjs)) &amp;&amp; os(windows))</p>
+            <ul class="build-depends">
+            <li>Win32 &lt;0</li>
+            </ul>
+<p>if (impl(ghcjs &gt;=0) || os(ghcjs))</p>
+            <ul class="build-depends">
+            <li>ghcjs-dom &gt;=0.9.5.0 &amp;&amp; &lt;1</li>
+            <li>jsaddle</li>
+            </ul>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+  </div>
+</body>
+
+</html>

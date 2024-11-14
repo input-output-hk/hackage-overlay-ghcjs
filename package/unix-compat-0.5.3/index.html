@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>
+    unix-compat-0.5.3
+  </title>
+  <style>
+    ul.build-depends {
+      list-style: none;
+    }
+
+    ul.build-depends li {
+      display: inline;
+    }
+
+    ul.build-depends li:not(:last-child):after {
+      content: ",";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container px-4 py-5">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="../../index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-packages/index.html">All packages</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-package-versions/index.html">All package versions</a>
+      </li>
+    </ul>
+    <h1 class="py-5">
+      unix-compat-0.5.3
+    </h1>
+    <dl class="row class=" px-4 py-5">
+      <dt class="col-sm-3">Synopsis</dt>
+      <dd class="col-sm-9">
+        <p>Portable POSIX-compatibility layer.</p>
+      </dd>
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9">
+        <p>This package provides portable implementations of parts
+of the unix package. This package re-exports the unix
+package when available. When it isn&#39;t available,
+portable implementations are used.</p>
+      </dd>
+      <dt class="col-sm-3">Author</dt>
+      <dd class="col-sm-9">
+        <p>Björn Bringert, Duncan Coutts, Jacob Stanley, Bryan O&#39;Sullivan</p>
+      </dd>
+      <dt class="col-sm-3">Maintainer</dt>
+      <dd class="col-sm-9">
+        <p>Jacob Stanley &lt;jacob@stanley.io&gt;</p>
+      </dd>
+      <dt class="col-sm-3">License</dt>
+      <dd class="col-sm-9">
+        <p>BSD3</p>
+      </dd>
+      <dt class="col-sm-3">Source</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+                  </dl>
+      </dd>
+      <dt class="col-sm-3">Timestamp</dt>
+      <dd class="col-sm-9">
+        <p></p>
+      </dd>
+      <dt class="col-sm-3">Revisions</dt>
+      <dd class="col-sm-9">
+        <p>None</p>
+      </dd>
+      <dt class="col-sm-3">Dependencies</dt>
+      <dd class="col-sm-9">
+        <dl>
+          <dt>library unix-compat:</dt>
+          <dd>
+            <ul class="build-depends">
+            <li>[&quot;base &gt;=4 &amp;&amp; &lt;5&quot;]</li>
+            </ul>
+            <p>if !os(windows)</p>
+            <ul class="build-depends">
+            <li>unix &gt;=2.6 &amp;&amp; &lt;2.8</li>
+            </ul>
+<p>if (os(windows) &amp;&amp; !flag(old-time))</p>
+            <ul class="build-depends">
+            <li>time &gt;=1.0 &amp;&amp; &lt;1.10</li>
+            <li>directory &gt;=1.2 &amp;&amp; &lt;1.4</li>
+            </ul>
+<p>if (os(windows) &amp;&amp; (flag(old-time) &amp;&amp; !impl(ghc &lt;7)))</p>
+            <ul class="build-depends">
+            <li>directory &gt;=1.1 &amp;&amp; &lt;1.2</li>
+            </ul>
+<p>if (os(windows) &amp;&amp; (flag(old-time) &amp;&amp; impl(ghc &lt;7)))</p>
+            <ul class="build-depends">
+            <li>directory &gt;=1.0 &amp;&amp; &lt;1.1</li>
+            </ul>
+<p>if (os(windows) &amp;&amp; flag(old-time))</p>
+            <ul class="build-depends">
+            <li>old-time &gt;=1.0.0.0 &amp;&amp; &lt;1.2.0.0</li>
+            </ul>
+<p>if os(windows)</p>
+            <ul class="build-depends">
+            <li>Win32 &gt;=2.5.0.0 &amp;&amp; &lt;2.12</li>
+            </ul>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+  </div>
+</body>
+
+</html>

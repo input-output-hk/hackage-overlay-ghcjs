@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>
+    clock-0.8.2
+  </title>
+  <style>
+    ul.build-depends {
+      list-style: none;
+    }
+
+    ul.build-depends li {
+      display: inline;
+    }
+
+    ul.build-depends li:not(:last-child):after {
+      content: ",";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container px-4 py-5">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="../../index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-packages/index.html">All packages</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-package-versions/index.html">All package versions</a>
+      </li>
+    </ul>
+    <h1 class="py-5">
+      clock-0.8.2
+    </h1>
+    <dl class="row class=" px-4 py-5">
+      <dt class="col-sm-3">Synopsis</dt>
+      <dd class="col-sm-9">
+        <p>High-resolution clock functions: monotonic, realtime, cputime.</p>
+      </dd>
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9">
+        <p>A package for convenient access to high-resolution clock and
+timer functions of different operating systems via a unified API.
+
+POSIX code and surface API was developed by Cetin Sert in 2009.
+
+Windows code was contributed by Eugene Kirpichov in 2010.
+
+FreeBSD code was contributed by Finn Espen Gundersen on 2013-10-14.
+
+OS X code was contributed by Gerolf Seitz on 2013-10-15.
+
+Derived @Generic@, @Typeable@ and other instances for @Clock@ and @TimeSpec@ was contributed by Mathieu Boespflug on 2014-09-17.
+
+Corrected dependency listing for @GHC &lt; 7.6@ was contributed by Brian McKenna on 2014-09-30.
+
+Windows code corrected by Dimitri Sabadie on 2015-02-09.
+
+Added @timeSpecAsNanoSecs@ as observed widely-used by Chris Done on 2015-01-06, exported correctly on 2015-04-20.
+
+Imported Control.Applicative operators correctly for Haskell Platform on Windows on 2015-04-21.
+
+Unit tests and instance fixes by Christian Burger on 2015-06-25.
+
+Removal of fromInteger : Integer -&gt; TimeSpec by Cetin Sert on 2015-12-15.
+
+New Linux-specific Clocks: MonotonicRaw, Boottime, MonotonicCoarse, RealtimeCoarse by Cetin Sert on 2015-12-15.
+
+Reintroduction fromInteger : Integer -&gt; TimeSpec by Cetin Sert on 2016-04-05.
+
+Fixes for older Linux build failures introduced by new Linux-specific clocks by Mario Longobardi on 2016-04-18.
+
+Refreshment release in 2019-04 after numerous contributions.
+
+Refactoring for Windows, Mac implementation consistence by Alexander Vershilov on 2021-01-16.
+
+[Version Scheme]
+Major-@/R/@-ewrite . New-@/F/@-unctionality . @/I/@-mprovementAndBugFixes . @/P/@-ackagingOnly
+
+* @PackagingOnly@ changes are made for quality assurance reasons.</p>
+      </dd>
+      <dt class="col-sm-3">Author</dt>
+      <dd class="col-sm-9">
+        <p>Cetin Sert &lt;cetin@sert.works&gt;, Corsis Research</p>
+      </dd>
+      <dt class="col-sm-3">Maintainer</dt>
+      <dd class="col-sm-9">
+        <p>Cetin Sert &lt;cetin@sert.works&gt;, Corsis Research</p>
+      </dd>
+      <dt class="col-sm-3">License</dt>
+      <dd class="col-sm-9">
+        <p>BSD3</p>
+      </dd>
+      <dt class="col-sm-3">Source</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+                  </dl>
+      </dd>
+      <dt class="col-sm-3">Timestamp</dt>
+      <dd class="col-sm-9">
+        <p></p>
+      </dd>
+      <dt class="col-sm-3">Revisions</dt>
+      <dd class="col-sm-9">
+        <p>None</p>
+      </dd>
+      <dt class="col-sm-3">Dependencies</dt>
+      <dd class="col-sm-9">
+        <dl>
+          <dt>library clock:</dt>
+          <dd>
+            <ul class="build-depends">
+            <li>[&quot;base &gt;=4.4 &amp;&amp; &lt;=5&quot;]</li>
+            </ul>
+            <p>if impl(ghc &lt;7.6)</p>
+            <ul class="build-depends">
+            <li>base &gt;=4.4 &amp;&amp; &lt;=5</li>
+            <li>ghc-prim</li>
+            </ul>
+          </dd>
+          <dt>test-suite benchmarks:</dt>
+          <dd>
+            <ul class="build-depends">
+<li>[&quot;base &gt;=4 &amp;&amp; &lt;5&quot;,&quot;criterion&quot;,&quot;clock&quot;]</li>
+</ul>
+
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+  </div>
+</body>
+
+</html>

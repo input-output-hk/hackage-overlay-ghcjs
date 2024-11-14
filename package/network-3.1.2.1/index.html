@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>
+    network-3.1.2.1
+  </title>
+  <style>
+    ul.build-depends {
+      list-style: none;
+    }
+
+    ul.build-depends li {
+      display: inline;
+    }
+
+    ul.build-depends li:not(:last-child):after {
+      content: ",";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container px-4 py-5">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="../../index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-packages/index.html">All packages</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../../all-package-versions/index.html">All package versions</a>
+      </li>
+    </ul>
+    <h1 class="py-5">
+      network-3.1.2.1
+    </h1>
+    <dl class="row class=" px-4 py-5">
+      <dt class="col-sm-3">Synopsis</dt>
+      <dd class="col-sm-9">
+        <p>Low-level networking interface</p>
+      </dd>
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9">
+        <p>This package provides a low-level networking interface.
+
+=== High-Level Packages
+Other packages provide higher level interfaces:
+
+* connection
+* hookup
+* network-simple
+
+=== Extended Packages
+@network@ seeks to provide a cross-platform core for networking. As such some
+APIs live in extended libraries. Packages in the @network@ ecosystem are
+often prefixed with @network-@.
+
+==== @network-bsd@
+In @network-3.0.0.0@ the @Network.BSD@ module was split off into its own
+package, @network-bsd-3.0.0.0@.
+
+==== @network-uri@
+In @network-2.6@ the @Network.URI@ module was split off into its own package,
+@network-uri-2.6@. If you&#39;re using the @Network.URI@ module you can
+automatically get it from the right package by adding this to your @.cabal@
+file:
+
+&gt; library
+&gt;   build-depends: network-uri-flag</p>
+      </dd>
+      <dt class="col-sm-3">Author</dt>
+      <dd class="col-sm-9">
+        <p></p>
+      </dd>
+      <dt class="col-sm-3">Maintainer</dt>
+      <dd class="col-sm-9">
+        <p>Kazu Yamamoto, Evan Borden</p>
+      </dd>
+      <dt class="col-sm-3">License</dt>
+      <dd class="col-sm-9">
+        <p>BSD3</p>
+      </dd>
+      <dt class="col-sm-3">Source</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+                  </dl>
+      </dd>
+      <dt class="col-sm-3">Timestamp</dt>
+      <dd class="col-sm-9">
+        <p></p>
+      </dd>
+      <dt class="col-sm-3">Revisions</dt>
+      <dd class="col-sm-9">
+        <p>None</p>
+      </dd>
+      <dt class="col-sm-3">Dependencies</dt>
+      <dd class="col-sm-9">
+        <dl>
+          <dt>library network:</dt>
+          <dd>
+            <ul class="build-depends">
+            <li>[&quot;base &gt;=4.9 &amp;&amp; &lt;4.17&quot;,&quot;bytestring &gt;=0.10 &amp;&amp; &lt;0.12&quot;,&quot;deepseq&quot;,&quot;directory&quot;]</li>
+            </ul>
+                      </dd>
+          <dt>test-suite spec:</dt>
+          <dd>
+            <ul class="build-depends">
+<li>[&quot;base &gt;=4.9 &amp;&amp; &lt;4.17&quot;,&quot;bytestring&quot;,&quot;directory&quot;,&quot;HUnit&quot;,&quot;network&quot;,&quot;temporary&quot;,&quot;hspec &gt;=2.6&quot;,&quot;QuickCheck&quot;]</li>
+</ul>
+
+          </dd>
+          <dt>test-suite doctests:</dt>
+          <dd>
+            <ul class="build-depends">
+<li>[&quot;base &gt;=4.9 &amp;&amp; &lt;4.17&quot;,&quot;doctest &gt;=0.10.1&quot;,&quot;network&quot;]</li>
+</ul>
+
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+  </div>
+</body>
+
+</html>
