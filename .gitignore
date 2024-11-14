@@ -1,2 +1,8 @@
-/_repo/
-/_cache/
+_cache/
+_keys/
+_repo/
+
+result*
+
+.envrc
+.direnv
