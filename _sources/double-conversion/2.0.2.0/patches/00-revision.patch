@@ -1,0 +1,21 @@
+--- double-conversion-2.0.2.0-r0/double-conversion.cabal	2024-11-14 15:47:00.645628279 +1300
++++ double-conversion-2.0.2.0/double-conversion.cabal	2024-11-14 15:47:00.654020556 +1300
+@@ -1,5 +1,6 @@
+ name:           double-conversion
+ version:        2.0.2.0
++x-revision: 2
+ license:        BSD3
+ license-file:   LICENSE
+ homepage:       https://github.com/bos/double-conversion
+@@ -95,9 +96,9 @@
+ 
+   build-depends:
+     base == 4.*,
+-    bytestring,
++    bytestring <0.11,
+     ghc-prim,
+-    text >= 0.11.0.8
++    text >= 0.11.0.8 && < 1.3
+ 
+   if flag(developer)
+     ghc-options: -Werror

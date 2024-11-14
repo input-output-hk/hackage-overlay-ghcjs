@@ -7,7 +7,7 @@ index 96f26b79a..bd157a1ea 100644
  name:               direct-sqlite
  version:            2.3.26
  synopsis:           Low-level binding to SQLite3.  Includes UTF8 and BLOB support.
-@@ -17,12 +18,15 @@ maintainer:         Sergey Bushnyak <sergey.bushnyak@sigrlami.eu>
+@@ -17,12 +18,11 @@ maintainer:         Sergey Bushnyak <sergey.bushnyak@sigrlami.eu>
  category:           Database
  homepage:           https://github.com/IreneKnapp/direct-sqlite
  bug-reports:        https://github.com/IreneKnapp/direct-sqlite/issues/new
@@ -15,10 +15,6 @@ index 96f26b79a..bd157a1ea 100644
  extra-source-files: cbits/sqlite3.c
                      cbits/sqlite3.h
                      cbits/sqlite3ext.h
-+                    jsbits/emscripten/build.sh
-+                    jsbits/emscripten/direct-sqlite-wrappers.js
-+                    jsbits/emscripten/direct-sqlite.pre.js
-+                    jsbits/emscripten/direct-sqlite.post.js
                      changelog
 -cabal-version:      >= 1.10
 +build-type:         Simple
