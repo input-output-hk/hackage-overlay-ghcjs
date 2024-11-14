@@ -10,9 +10,9 @@ repository ghcjs-overlay
   url: https://input-output-hk.github.io/hackage-overlay-ghcjs/
   secure: True
   root-keys:
-    8a783638a6101250e7d94763cc4902153339372ea220929719b8dad324c16485
-    c0b3e5df0672b1c91b7b3f123fb3bfb42745cf8bdb49b7e2c0f30fa1780697d6
-    c63cca9b4f06cbf95b1c36c045c60c820a776245118fb73073017febf5b75f0f
+    3838d0dfa046bb3d16de9ae0823dab1dd937ee336f9bcaa87c85b36443aee7f6
+    92e8a83a0df4f99ff0372b6dcdb008c52971d1d53b1df621630f5a650fbf1f0a
+    d5f108840fa2addca04caa82bc4c60ce41df7c0d3133baf6716b05a4dce11b6c
   key-threshold: 3
 ```
 
