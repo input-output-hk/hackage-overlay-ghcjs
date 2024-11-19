@@ -1,0 +1,17 @@
+--- gauge-0.2.5-r0/gauge.cabal	2024-11-14 15:47:04.902799359 +1300
++++ gauge-0.2.5/gauge.cabal	2024-11-14 15:47:04.911596679 +1300
+@@ -1,5 +1,6 @@
+ name:           gauge
+ version:        0.2.5
++x-revision: 2
+ synopsis:       small framework for performance measurement and analysis
+ license:        BSD3
+ license-file:   LICENSE
+@@ -56,6 +57,7 @@
+     System.Random.MWC
+ 
+   if flag(analysis) && !impl(ghcjs)
++      build-depends: base < 4.20
+       exposed-modules:
+         Gauge.Analysis
+       other-modules:

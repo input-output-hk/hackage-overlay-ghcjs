@@ -1,0 +1,27 @@
+--- network-info-0.2.0.10-r0/network-info.cabal	2024-11-14 15:47:13.344982457 +1300
++++ network-info-0.2.0.10/network-info.cabal	2024-11-14 15:47:13.355316906 +1300
+@@ -1,5 +1,6 @@
+ name:           network-info
+ version:        0.2.0.10
++x-revision: 1
+ synopsis:       Access the local computer's basic network configuration
+ 
+ description:    This library provides simple read-only access to the
+@@ -13,7 +14,7 @@
+                 XP/7. It probably works on other flavours of Linux,
+                 OS X, FreeBSD and Windows as well.
+ 
+-homepage:       http://github.com/jystic/network-info
++homepage:       http://github.com/jacobstanley/network-info
+ license:        BSD3
+ license-file:   LICENSE
+ author:         Jacob Stanley
+@@ -36,7 +37,7 @@
+ 
+ source-repository head
+   type:     git
+-  location: git://github.com/jystic/network-info.git
++  location: git://github.com/jacobstanley/network-info.git
+ 
+ Library
+   hs-source-dirs: src

@@ -1,0 +1,35 @@
+--- entropy-0.4.1.7-r0/entropy.cabal	2024-11-14 15:47:02.011374301 +1300
++++ entropy-0.4.1.7/entropy.cabal	2024-11-14 15:47:02.021338083 +1300
+@@ -1,6 +1,7 @@
+ name:           entropy
+ 
+ version:        0.4.1.7
++x-revision: 2
+ description:    A mostly platform independent method to obtain cryptographically strong entropy
+                 (RDRAND, urandom, CryptAPI, and patches welcome)
+                 Users looking for cryptographically strong (number-theoretically
+@@ -35,7 +36,7 @@
+ 
+ 
+ custom-setup
+-  setup-depends: Cabal >= 1.10 && < 3.7
++  setup-depends: Cabal >= 1.10 && < 3.9
+                , base < 5
+                , filepath < 1.5
+                , directory < 1.4
+@@ -80,13 +81,13 @@
+       cpp-options: -Darch_i386
+       cc-options:  -Darch_i386 -O2
+     if os(windows)
+-      build-depends: Win32 >= 2.5
++      build-depends: Win32 < 0
+       cpp-options: -DisWindows
+       cc-options:  -DisWindows
+       extra-libraries: advapi32
+     else
+       if !os(halvm)
+-         Build-Depends: unix
++         Build-Depends: unix <2.8
+          c-sources: cbits/getrandom.c cbits/random_initialized.c
+   }
+ 
