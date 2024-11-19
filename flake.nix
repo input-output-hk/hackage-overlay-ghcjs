@@ -40,7 +40,28 @@
       inherit (import ./nix/chap-meta.nix { inherit lib CHaP; }) chap-package-latest-versions chap-package-versions mkPackageTreeWith;
 
       smokeTestPackages = [
-        # TODO
+        "Cabal"
+        "basement"
+        "beam-sqlite"
+        "cborg"
+        "clock"
+        "cryptonite"
+        "digest"
+        "direct-sqlite"
+        "double-conversion"
+        "entropy"
+        "foundation"
+        "gauge"
+        "lzma"
+        "memory"
+        "mersenne-random-pure64"
+        "network"
+        "network-info"
+        "scrypt"
+        "terminal-size"
+        "unix"
+        "unix-bytestring"
+        "unix-compat"
       ];
 
       # Using intersectAttrs like this is a cheap way to throw away everything
