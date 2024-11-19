@@ -24,7 +24,7 @@
     };
 
     CHaP = {
-      url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+      url = "github:input-output-hk/hackage-overlay-ghcjs?ref=repo";
       flake = false;
     };
 
