@@ -188,9 +188,9 @@
           checks = flattenTree smokeTestPackages;
 
           hydraJobs =
-            lib.optionalAttrs (system != "aarch64-linux")
+            lib.optionalAttrs (system != "aarch64-linux") (
               (mkCompilerPackageTreeWith builder smoke-test-package-versions)
-            // { devShells = devShells; };
+            // { devShells = devShells; });
         });
 
   nixConfig = {
