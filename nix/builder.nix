@@ -82,7 +82,7 @@ let
     components
     // docs
     // {
-      aggregate = (pkgs.releaseTools.aggregate {
+      aggregate = (pkgs.pkgsBuildBuild.releaseTools.aggregate {
         name = package-id;
         constituents = builtins.attrValues components ++ builtins.attrValues docs;
       }) // {

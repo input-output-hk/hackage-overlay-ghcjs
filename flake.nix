@@ -73,9 +73,9 @@
 
       # type CompilerName = String
       # compilers :: [CompilerName]
-      compilers = [ "ghc810" "ghc96" "ghc98" ];
+      compilers = [ "ghc810" "ghc96" "ghc98" "ghc910" ];
       # compilers which we don't build for by default
-      experimental-compilers = [ "ghc98" ];
+      experimental-compilers = [];
 
       # Add exceptions to the CI here.
       #
@@ -139,7 +139,10 @@
             ];
           };
 
-          builder = import ./nix/builder.nix { inherit pkgs CHaP extraConfig; };
+          builder = import ./nix/builder.nix {
+            inherit CHaP extraConfig;
+            pkgs = pkgs.pkgsCross.ghcjs;
+          };
 
           # use a self + path reference to ensure this runs in the context of the
           # whole flake source, so can see the other scripts
