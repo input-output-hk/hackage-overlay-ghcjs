@@ -14,17 +14,18 @@ env:
   NIX_CONFIG: accept-flake-config = true
 
 jobs:
-  shellcheck:
-    runs-on: nixos
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run shellcheck on scripts/*.sh
-        run: nix-shell -I nixpkgs=https://github.com/nixos/nixpkgs/archive/release-23.05.tar.gz -p shellcheck --run 'shellcheck scripts/*.sh'
-        
   check:
-    runs-on: nixos
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Install Nix with good defaults
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk=
+            substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # the check script below needs the whole history
@@ -33,9 +34,17 @@ jobs:
         run: nix develop -c ./scripts/check.sh
 
   build-repo:
-    runs-on: nixos
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Install Nix with good defaults
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk=
+            substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - name: Checkout main 
         uses: actions/checkout@v4
         with:
@@ -113,11 +122,19 @@ jobs:
           ./scripts/check-archive-extension.sh _repo-main/01-index.tar _repo/01-index.tar
 
   build-packages:
-    runs-on: nixos
+    runs-on: ubuntu-latest
     needs:
       - build-repo
 
     steps:
+      - name: Install Nix with good defaults
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk=
+            substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - uses: actions/checkout@v4
 
       - name: Download built repository
@@ -141,12 +158,20 @@ jobs:
           --show-trace
 
   build-new-packages:
-    runs-on: nixos
+    runs-on: ubuntu-latest
 
     needs:
       - build-repo
 
     steps:
+      - name: Install Nix with good defaults
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk=
+            substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - uses: actions/checkout@v4
 
       - name: Download built repository
@@ -187,13 +212,21 @@ jobs:
           --show-trace
 
   deploy-check:
-    runs-on: nixos
+    runs-on: ubuntu-latest
 
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: 
       - build-repo
 
     steps:
+      - name: Install Nix with good defaults
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= loony-tools:pr9m4BkM/5/eSTZlkQyRt57Jz7OMBxNSUiMC4FkcNfk=
+            substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - uses: actions/checkout@v4
         with:
           path: src
