@@ -6,7 +6,7 @@ on:
   # builds on PRs.
   push:
     branches:
-      - main
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -45,10 +45,10 @@ jobs:
             substituters = https://cache.iog.io/ https://cache.zw3rk.com/ https://cache.nixos.org/
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - name: Checkout main 
+      - name: Checkout master 
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: master
 
       # See https://github.com/actions/cache/pull/1231
       # Astonishingly, this simple bump is not merged and released yet
@@ -70,11 +70,11 @@ jobs:
             echo "$KEYS" | base64 -d | tar xvz -C _keys
           fi
 
-      - name: Build repository (main)
+      - name: Build repository (master)
         run: |
           nix develop -c foliage build -j 0  --write-metadata
-          mv _repo _repo-main
-          cp _repo-main/foliage/packages.json packages-old.json
+          mv _repo _repo-master
+          cp _repo-master/foliage/packages.json packages-old.json
 
       - name: Checkout tip commit
         uses: actions/checkout@v4
@@ -118,8 +118,8 @@ jobs:
           echo "If this check failed because 'some entries only exist in the old index'"
           echo "then you may need to update your branch.\n"
           echo "If it failed because 'the last old entry is newer than the first new entry'"
-          echo "then you may need to update the timestamps in your new packages to be newer than those in main."
-          ./scripts/check-archive-extension.sh _repo-main/01-index.tar _repo/01-index.tar
+          echo "then you may need to update the timestamps in your new packages to be newer than those in master."
+          ./scripts/check-archive-extension.sh _repo-master/01-index.tar _repo/01-index.tar
 
   build-packages:
     runs-on: ubuntu-latest
@@ -214,7 +214,7 @@ jobs:
   deploy-check:
     runs-on: ubuntu-latest
 
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: 
       - build-repo
 
@@ -247,7 +247,7 @@ jobs:
           tar xf _repo.tar -C built-repo
 
       # This is meaningfully different to the check in 'build': that checks the repository
-      # built from main and from the PR tip, but that's not _actually_ the repository
+      # built from master and from the PR tip, but that's not _actually_ the repository
       # deployed in the repo branch. It should be the same, but it can't hurt to check
       # against the thing that's actually deployed before we deploy.
       - name: Check new index is an extension of the old index
@@ -257,7 +257,7 @@ jobs:
   deploy:
     # This job is fine to run on GitHub provided (free) runners.
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: 
       - check
       - build-repo
